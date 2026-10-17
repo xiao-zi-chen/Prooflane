@@ -18,7 +18,7 @@ Tenant isolation, VM creation and snapshot restoration, a worker credential revo
 
 Relevant issues include authentication bypass, unauthorized reads or result uploads, path traversal, credential exposure, and execution or data access that violates the documented boundaries.
 
-GitHub private vulnerability reporting is enabled. Use [Report a vulnerability](https://github.com/xiao-zi-chen/new/security/advisories/new). Do not post exploit instructions, credentials or customer evidence in public Issues. There is no separate security email address at present.
+GitHub private vulnerability reporting is enabled. Use [Report a vulnerability](https://github.com/xiao-zi-chen/Prooflane/security/advisories/new). Do not post exploit instructions, credentials or customer evidence in public Issues. There is no separate security email address at present.
 
 Include:
 

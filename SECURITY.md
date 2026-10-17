@@ -18,7 +18,7 @@ Prooflane 会安装和运行用户提交的桌面应用。当前设计面向可�
 
 适用问题包括认证绕过、越权读取或回传、路径越界、凭据泄露，以及与文档描述不符的执行或数据访问能力。
 
-仓库已启用 GitHub 私密漏洞报告，请通过[报告漏洞](https://github.com/xiao-zi-chen/new/security/advisories/new)提交。不要在公开 Issue 中发布利用步骤、凭据或客户证据。当前未另设安全邮箱。
+仓库已启用 GitHub 私密漏洞报告，请通过[报告漏洞](https://github.com/xiao-zi-chen/Prooflane/security/advisories/new)提交。不要在公开 Issue 中发布利用步骤、凭据或客户证据。当前未另设安全邮箱。
 
 报告中提供：
 

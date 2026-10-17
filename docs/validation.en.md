@@ -22,7 +22,7 @@ Run `python -m pytest -q`. The local run after the initial documentation cleanup
 
 Coverage includes input constraints, archive boundaries, platform / architecture matching, atomic claims, expired leases, authentication, cancellation, result provenance, aligned scenarios, export allowlists, build hashes and preflight without application launch.
 
-The first [GitHub Actions run](https://github.com/xiao-zi-chen/new/actions/runs/39039156800), for commit `ec1256f`, passed all seven jobs: six combinations of Windows, macOS, Ubuntu and Python 3.11 / 3.12, plus documentation / JavaScript checks. Hosted runner code tests are not native GUI acceptance.
+The first [GitHub Actions run](https://github.com/xiao-zi-chen/Prooflane/actions/runs/39039156800), for commit `ec1256f`, passed all seven jobs: six combinations of Windows, macOS, Ubuntu and Python 3.11 / 3.12, plus documentation / JavaScript checks. Hosted runner code tests are not native GUI acceptance.
 
 | Runner | Python 3.11 | Python 3.12 |
 | --- | --- | --- |

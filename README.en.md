@@ -2,7 +2,7 @@
 
 [简体中文](README.md) · **English**
 
-[![Checks](https://github.com/xiao-zi-chen/new/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/xiao-zi-chen/new/actions/workflows/checks.yml)
+[![Checks](https://github.com/xiao-zi-chen/Prooflane/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/xiao-zi-chen/Prooflane/actions/workflows/checks.yml)
 
 Test native Windows, macOS and Linux builds with the same acceptance steps, then compare screenshots, recordings and logs.
 
@@ -70,7 +70,7 @@ The frontend uses plain HTML, CSS and JavaScript, with no build step. The backen
 .\.venv\Scripts\python.exe scripts/check_docs.py
 ```
 
-See [Contributing](CONTRIBUTING.en.md) for submission guidelines and GUI checks. [CI](.github/workflows/checks.yml) runs code tests on three operating systems, documentation checks and frontend syntax checks. Results are available in [GitHub Actions](https://github.com/xiao-zi-chen/new/actions). Native desktop validation is recorded separately.
+See [Contributing](CONTRIBUTING.en.md) for submission guidelines and GUI checks. [CI](.github/workflows/checks.yml) runs code tests on three operating systems, documentation checks and frontend syntax checks. Results are available in [GitHub Actions](https://github.com/xiao-zi-chen/Prooflane/actions). Native desktop validation is recorded separately.
 
 Report ordinary problems through repository Issues, with a minimal reproduction and environment details. For credential exposure, unauthorized access or data leaks, follow the [Security policy](SECURITY.en.md). Changes are recorded in the [Changelog](CHANGELOG.en.md).
 

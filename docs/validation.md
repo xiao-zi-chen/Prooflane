@@ -22,7 +22,7 @@
 
 覆盖输入约束、压缩包边界、平台与架构匹配、原子领取、租约失效、认证、取消、回传来源保护、共同场景、执行包白名单、构建哈希和预检不启动应用。
 
-首次 [GitHub Actions 运行](https://github.com/xiao-zi-chen/new/actions/runs/39039156800)对应提交 `ec1256f`：Windows、macOS、Ubuntu 与 Python 3.11 / 3.12 的六个代码测试任务，以及文档 / JavaScript 检查，共七项全部通过。托管 runner 的代码测试不等于原生 GUI 验收。
+首次 [GitHub Actions 运行](https://github.com/xiao-zi-chen/Prooflane/actions/runs/39039156800)对应提交 `ec1256f`：Windows、macOS、Ubuntu 与 Python 3.11 / 3.12 的六个代码测试任务，以及文档 / JavaScript 检查，共七项全部通过。托管 runner 的代码测试不等于原生 GUI 验收。
 
 | Runner | Python 3.11 | Python 3.12 |
 | --- | --- | --- |
