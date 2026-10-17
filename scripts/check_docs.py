@@ -56,6 +56,13 @@ def check(root):
             errors.append(f"{name}: unclosed fenced code block")
         if ".github" not in path.relative_to(root).parts and len(re.findall(r"^# ", body, re.MULTILINE)) != 1:
             errors.append(f"{name}: expected one document title")
+        if ".github" not in path.relative_to(root).parts:
+            counterpart = path.with_name(path.name[:-6] + ".md" if path.name.endswith(".en.md") else path.stem + ".en.md")
+            if counterpart not in files:
+                errors.append(f"{name}: missing language counterpart {counterpart.name}")
+            label = "简体中文" if path.name.endswith(".en.md") else "English"
+            if f"[{label}]({counterpart.name})" not in "\n".join(body.splitlines()[:8]):
+                errors.append(f"{name}: missing language link near the document title")
 
     inline_link = re.compile(r'!?\[[^\]\n]*\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+"[^"\n]*")?\s*\)')
     reference = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*(<[^>]+>|\S+)", re.MULTILINE)

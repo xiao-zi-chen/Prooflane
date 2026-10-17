@@ -1,6 +1,7 @@
 """Reusable execution plans and narrowly scoped, credential-free handoff archives."""
 import hashlib
 import json
+import shlex
 import tempfile
 import zipfile
 from pathlib import Path
@@ -39,9 +40,56 @@ RUNTIME_FILES = (
 )
 DOC_FILES = ("execution-strategy.md", "handoff-acceptance.md", "issue-template.md")
 
+PLAN_TEXT_EN = {
+    "windows": {
+        "environment": "Windows 10 / 11; Python 3.11+; keep the desktop signed in and unlocked. Run one GUI task per desktop at a time.",
+        "validation": "Windows samples have execution evidence. New applications and system versions still need their own acceptance tests.",
+        "pitfalls": [
+            "An interactive, unlocked desktop differs from an administrator background session. Check the session if no window appears.",
+            "Installers need correct silent arguments and the full installed application path.",
+            "For locator failures, return controls.json and ask the application owner to confirm control names or IDs.",
+        ],
+    },
+    "macos": {
+        "environment": "A Mac or macOS environment on Apple hardware; Python 3.11+; an actual user desktop; Accessibility and Screen Recording permissions.",
+        "validation": "The adapter and sample still await native GUI testing on macOS. Delivering a kit does not establish a pass.",
+        "pitfalls": [
+            "Grant Accessibility and Screen Recording permission to the desktop terminal / Python process, then restart it.",
+            "Record Apple Silicon or Intel explicitly. A pass on one architecture does not cover the other.",
+            "Prefer DMG for APP bundles with Framework symlinks. Preserve original permission, signing or Gatekeeper errors.",
+        ],
+    },
+    "linux": {
+        "environment": "Prefer Ubuntu 24.04; Python 3.11+; X11, D-Bus, AT-SPI and XComposite. A dedicated Xvfb session is possible but must be recorded as a virtual display. Wayland is unsupported.",
+        "validation": "The adapter and sample still await native GUI testing on Linux. Xvfb does not establish Wayland or physical GPU coverage.",
+        "pitfalls": [
+            "Without a signed-in X11 desktop, use the Xvfb command below. Do not label a Wayland session as X11 validation.",
+            "For AppImage launch failures, check FUSE and runtime libraries. Keep logs and initially classify the failure as an environment blocker.",
+            "Record the distribution, architecture and X11 / Xvfb / WSL2 environment. One Ubuntu machine does not represent all Linux systems.",
+        ],
+    },
+}
 
-def invitation(kind, run=None):
+
+def launch_command(kind, manifest, included, language):
+    path = manifest["package"]["file"] if included else ("path/to/application" if language == "en" else "应用文件路径")
+    # These instructions are pasted into PowerShell or Bash; filenames are literal arguments.
+    quoted = "'" + path.replace("'", "''") + "'" if kind == "windows" else shlex.quote(path)
+    return PLANS[kind]["execute"].rsplit(" --package ", 1)[0] + " --package " + quoted
+
+
+def invitation(kind, run=None, language="zh"):
     plan = PLANS[kind]
+    if language == "en":
+        task = (f"Task: {run['name']}\nBuild: {run['package']['name']}\nSHA-256: {run['package']['sha256']}\n"
+                if run else "The application owner will provide a native build and 3-5 acceptance steps separately.\n")
+        return (f"Could you help with a {plan['name']} desktop acceptance test?\n{task}"
+                f"Environment: {PLAN_TEXT_EN[kind]['environment']}\n"
+                "We provide the instructions, steps and report templates; you provide or arrange the test environment.\n"
+                "Please confirm the system and architecture, available time, estimated cost, and permission to install dependencies and capture the application window. Agree on fees separately.\n"
+                "Run the kit locally; no connection to our controller or machine password is needed.\n"
+                "Return the original evidence ZIP, completed receipt and issue record. If blocked, return the error and environment details.\n"
+                "A reviewer will check the build hash, steps and evidence before confirming the result. Delivery or a self-reported success is not an automatic platform pass.")
     task = f"任务：{run['name']}\n构建：{run['package']['name']}\nSHA-256：{run['package']['sha256']}\n" if run else "应用方将另外提供本平台构建与 3–5 步验收场景。\n"
     return (f"希望邀请你协助完成一次 {plan['name']} 桌面验证。\n{task}"
             f"环境要求：{plan['environment']}\n"
@@ -52,20 +100,22 @@ def invitation(kind, run=None):
             "我们复核构建哈希、步骤和证据后确认结论；交付或执行者自报成功不自动计为平台通过。")
 
 
-def instructions(kind, manifest, included):
+def instructions(kind, manifest, included, language="zh"):
+    if language == "en":
+        return instructions_en(kind, manifest, included)
     plan = PLANS[kind]
     concrete = manifest["spec"] is not None
-    launch = plan["execute"]
-    if included:
-        launch = launch.replace('"应用文件路径"', json.dumps(manifest["package"]["file"], ensure_ascii=False))
+    launch = launch_command(kind, manifest, included, language)
     steps = "\n".join(f"{i+1}. {s['title']}（{s['action']}）" for i, s in enumerate((manifest["spec"] or {}).get("steps", [])))
     return f"""# {plan['name']} 执行交付包
+
+**简体中文** · [English](README.en.md)
 
 我们提供策略与工具；执行者提供和管理测试环境；应用方提供构建；复核者确认结果。
 
 ## 先确认输入
 
-{('这是已绑定任务的可执行包。' if concrete else '这是通用策略包，尚未绑定应用和场景。请让应用方在策略中心选定具体任务后导出可执行包。')}
+{('这是已绑定任务的可执行包。' if concrete else '这是通用策略包，尚未绑定应用和场景。请让应用方在“执行策略”选定具体任务后导出可执行包。')}
 {('应用构建位于 '+manifest['package']['file']+'。' if included else '此包未包含应用构建。已绑定任务时，请通过约定渠道取得同一 SHA-256 的原文件。')}
 任务信息、目标架构和构建哈希见 scenario.json；不要修改验收期望来掩盖失败。
 
@@ -101,6 +151,8 @@ def instructions(kind, manifest, included):
 
 ## 本次验收步骤
 
+任务原文、控件定位和预期文本按原始场景保留，不随文档语言改变。
+
 {steps or '待应用方提供 3–5 个共同步骤，以及各平台的窗口名、控件定位和预期文本。'}
 
 ## 返回什么
@@ -119,6 +171,83 @@ def instructions(kind, manifest, included):
 
 独立运行不需要节点凭据。长期接入由协调者单独提供服务地址和节点凭据，并安排私有连接；不要在本包内寻找共享密钥。
 当前交付包面向单次独立执行；在线节点请由协调者提供完整项目并按原生节点接入说明配置。
+"""
+
+
+def instructions_en(kind, manifest, included):
+    plan, wording = PLANS[kind], PLAN_TEXT_EN[kind]
+    concrete = manifest["spec"] is not None
+    launch = launch_command(kind, manifest, included, "en")
+    steps = "\n".join(f"{i+1}. {step['title']} ({step['action']})"
+                      for i, step in enumerate((manifest["spec"] or {}).get("steps", [])))
+    permissions = ("macOS: grant Accessibility and Screen Recording permission to the actual terminal / Python process, "
+                   "then restart the terminal and reactivate the virtual environment." if kind == "macos" else "")
+    xvfb = ("On a Linux server without a desktop, explicitly create a virtual display:\n\n```bash\n"
+            'NO_AT_BRIDGE=0 GTK_MODULES=atk-bridge GDK_BACKEND=x11 xvfb-run -a -s "-screen 0 1280x900x24 +extension Composite -nolisten tcp" dbus-run-session -- '
+            + launch + "\n```" if kind == "linux" else "")
+    return f"""# {plan['name']} execution kit
+
+[简体中文](README.md) · **English**
+
+The project provides the strategy and tools. The tester provides and manages the environment, the application owner supplies the build, and a reviewer confirms the result.
+
+## Check the inputs
+
+{'This kit is bound to a task and includes execution tools.' if concrete else 'This generic kit is not bound to an application or scenario. Ask the application owner to select a specific task under Execution strategy (执行策略) and export an execution kit.'}
+{'The application build is at '+manifest['package']['file']+'.' if included else 'The application build is not included. For a bound task, obtain the original file with the same SHA-256 through the agreed channel.'}
+Task details, target architecture and the build hash are in scenario.json. Do not change acceptance expectations to conceal failures.
+
+## Environment
+
+{wording['environment']}
+{wording['validation']}
+Open a terminal in the extracted directory. Use a dedicated test environment approved by its operator for installation and execution.
+
+## Standalone execution
+
+{'The runtime is included. Install dependencies below.' if concrete else 'The following commands are for use after receiving a task-bound execution kit. This generic kit does not contain runtime modules or requirements files.'}
+
+```{'powershell' if kind == 'windows' else 'bash'}
+{plan['install']}
+```
+
+{permissions}
+Preflight without installing or launching the application:
+
+```text
+{launch} --check
+```
+
+Run once on the target system:
+
+```text
+{launch}
+```
+
+{xvfb}
+
+## Acceptance steps
+
+Task text, locators and expected values are preserved from the original scenario and are not translated with these instructions.
+
+{steps or 'The application owner needs to provide 3-5 shared steps and platform-specific window titles, locators and expected text.'}
+
+## Return results
+
+The executor writes receipt.json and evidence.zip under results/<execution-id>/ and prints that directory.
+Failed runs and runs needing review also retain evidence. Exit code 0 means automated checks passed, 2 means review is required, and 1 means execution or environment checks failed.
+When a result directory exists, return receipt.json and evidence.zip and fill in ISSUE_TEMPLATE.en.md. If blocked before execution, return the original error and environment details.
+Apply ACCEPTANCE.en.md, recording the tester's and reviewer's conclusions separately. For repeat tests, reset the environment, keep the same build and scenario, and retain each result.
+Results are not uploaded automatically and do not change the source task's waiting state. Standalone evidence requires human review.
+
+## Common blockers
+
+{chr(10).join('- '+item for item in wording['pitfalls'])}
+
+## Optional connected worker
+
+Standalone execution needs no worker credential. For ongoing testing, the coordinator separately provides a server address, credentials and a private connection. No shared credential is included in this kit.
+This kit is for standalone execution; connected workers require the full project and its worker setup instructions.
 """
 
 
@@ -143,10 +272,18 @@ def build_kit(kind, run=None, package_path=None):
     try:
         with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
             archive.writestr("README.md", instructions(kind, manifest, bool(package_path)))
+            archive.writestr("README.en.md", instructions(kind, manifest, bool(package_path), "en"))
             archive.writestr("INVITATION.txt", invitation(kind, run))
+            archive.writestr("INVITATION.en.txt", invitation(kind, run, "en"))
             archive.writestr("scenario.json", json.dumps(manifest, ensure_ascii=False, indent=2))
-            for source, target in zip(DOC_FILES, ("STRATEGY.md", "ACCEPTANCE.md", "ISSUE_TEMPLATE.md")):
-                archive.write(ROOT / "docs" / source, target)
+            documents = dict(zip(DOC_FILES, ("STRATEGY.md", "ACCEPTANCE.md", "ISSUE_TEMPLATE.md")))
+            documents.update({source.replace(".md", ".en.md"): target.replace(".md", ".en.md")
+                              for source, target in list(documents.items())})
+            for source, target in documents.items():
+                content = (ROOT / "docs" / source).read_text(encoding="utf-8")
+                for doc_source, doc_target in documents.items():
+                    content = content.replace(f"]({doc_source})", f"]({doc_target})")
+                archive.writestr(target, content)
             if run:
                 for name in RUNTIME_FILES:
                     archive.write(ROOT / "prooflane" / name, "prooflane/"+name)

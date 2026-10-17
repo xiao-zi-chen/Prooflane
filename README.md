@@ -1,5 +1,7 @@
 # Prooflane · 桌面应用跨平台验收
 
+**简体中文** · [English](README.en.md)
+
 [![Checks](https://github.com/xiao-zi-chen/new/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/xiao-zi-chen/new/actions/workflows/checks.yml)
 
 桌面应用验收工具。为 Windows、macOS、Linux 分别提供应用构建，用同一组步骤运行测试，再对照截图、录像和日志。
@@ -36,6 +38,8 @@ macOS / Linux 上的控制台安装、首次提交和常见启动问题见[开�
 | 在线节点 | 在对应系统的桌面会话中启动节点，连接控制台 | 节点领取匹配任务，回传截图、录像和报告 |
 
 通用说明包只包含说明和模板。绑定具体任务后才包含运行工具；应用文件可选择附带。设备由测试者提供或安排，项目本身不创建或租用测试机。
+
+仓库文档与导出的执行包均提供中英文说明。界面目前使用中文，英文指南附有对应按钮名称。
 
 ## 平台状态
 

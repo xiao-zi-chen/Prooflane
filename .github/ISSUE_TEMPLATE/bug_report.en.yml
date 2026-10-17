@@ -1,0 +1,39 @@
+name: Bug report (English)
+description: Report a reproducible application, interface or execution problem
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share only minimal, sanitized evidence. For authentication bypass, unauthorized access or exposed credentials, read SECURITY.en.md and use private reporting.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Version and environment
+      description: Prooflane revision, Python, OS version, architecture and desktop session. State whether you use a connected worker or standalone kit.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction
+      description: Provide the shortest sequence, prerequisites and a sample or configuration that can be shared publicly.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual behavior
+      description: Include the failed step, original error and reproduction frequency. Do not infer results on untested platforms.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Sanitized logs, screenshots or recording timestamps. Exclude credentials, customer builds and unrelated personal data.
+  - type: textarea
+    id: attempts
+    attributes:
+      label: What you have tried
+      description: Can you complete the action manually? What changed after adjusting the environment or configuration?

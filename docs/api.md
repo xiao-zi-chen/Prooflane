@@ -1,5 +1,7 @@
 # API
 
+**简体中文** · [English](api.en.md)
+
 默认地址为 `http://127.0.0.1:8765`。完整请求和响应结构由 `GET /openapi.json` 提供；当前没有启用 Swagger UI 或 ReDoc 页面。
 
 ## 请求约定
@@ -92,6 +94,8 @@ with httpx.Client(
 | `GET /api/strategies/{kind}/invitation` | 获取邀请文字，不发送消息 |
 
 执行包和邀请接口可带 `run_id`。执行包接口可再带 `include_package=true`，将原构建包含在 ZIP 中；此参数必须与具体任务一起使用。`kind` 为三种平台标识之一。
+
+导出的 ZIP 同时包含中英文文档。现有邀请接口返回中文，英文邀请草稿可在执行包内取得。
 
 ## 结果与兼容性
 

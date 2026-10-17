@@ -1,6 +1,8 @@
 import hashlib
 import io
 import json
+import re
+import shlex
 import zipfile
 from pathlib import Path
 
@@ -20,15 +22,26 @@ def hub(tmp_path):
         yield client
 
 
-def create_task(hub, kind="linux"):
+def create_task(hub, kind="linux", filename="app.zip"):
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w") as archive:
         archive.writestr("app", "protocol fixture; not an application")
-    package = hub.post("/api/packages", headers=HEADERS, files={"file": ("app.zip", stream.getvalue())}).json()
+    package = hub.post("/api/packages", headers=HEADERS, files={"file": (filename, stream.getvalue())}).json()
     response = hub.post("/api/runs", headers=HEADERS, json={"name": "delegated task", "platform": kind,
         "package_id": package["id"], "window_title": "Notes", "steps": DEMO_STEPS[:4], "app_path": "app"})
     assert response.status_code == 201
     return response.json()
+
+
+def assert_kit_language_links(archive):
+    for name in archive.namelist():
+        if not name.endswith(".md"):
+            continue
+        content = archive.read(name).decode("utf-8")
+        counterpart = name[:-6] + ".md" if name.endswith(".en.md") else name[:-3] + ".en.md"
+        assert f"]({counterpart})" in content, name
+        for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", content):
+            assert target in archive.namelist(), (name, target)
 
 
 @pytest.mark.parametrize("kind", ["windows", "macos", "linux"])
@@ -36,7 +49,13 @@ def test_generic_strategy_is_shareable_without_local_machine_data(hub, kind):
     response = hub.get(f"/api/strategies/{kind}/kit")
     assert response.status_code == 200
     with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
-        assert set(archive.namelist()) == {"README.md", "INVITATION.txt", "scenario.json", "STRATEGY.md", "ACCEPTANCE.md", "ISSUE_TEMPLATE.md"}
+        assert set(archive.namelist()) == {
+            "README.md", "README.en.md", "INVITATION.txt", "INVITATION.en.txt", "scenario.json",
+            "STRATEGY.md", "STRATEGY.en.md", "ACCEPTANCE.md", "ACCEPTANCE.en.md",
+            "ISSUE_TEMPLATE.md", "ISSUE_TEMPLATE.en.md",
+        }
+        assert_kit_language_links(archive)
+        assert b"generic kit" in archive.read("README.en.md")
         manifest = json.loads(archive.read("scenario.json"))
         assert manifest["platform"] == kind and manifest["spec"] is None
         data = b"\n".join(archive.read(name) for name in archive.namelist())
@@ -46,13 +65,15 @@ def test_generic_strategy_is_shareable_without_local_machine_data(hub, kind):
     assert hub.get("/api/runs").json() == []
 
 
-def test_bound_kit_uses_original_scenario_and_only_includes_build_when_selected(hub):
-    run = create_task(hub)
+@pytest.mark.parametrize("kind", ["windows", "macos", "linux"])
+def test_bound_kit_uses_original_scenario_and_only_includes_build_when_selected(hub, kind):
+    run = create_task(hub, kind)
     original = hub.get("/api/runs/"+run["id"]).json()
     for include in (False, True):
-        response = hub.get("/api/strategies/linux/kit", params={"run_id": run["id"], "include_package": include})
+        response = hub.get(f"/api/strategies/{kind}/kit", params={"run_id": run["id"], "include_package": include})
         assert response.status_code == 200
         with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+            assert_kit_language_links(archive)
             manifest = json.loads(archive.read("scenario.json"))
             assert manifest["source_run_id"] == run["id"]
             assert manifest["spec"]["steps"] == run["spec"]["steps"]
@@ -64,6 +85,30 @@ def test_bound_kit_uses_original_scenario_and_only_includes_build_when_selected(
                 assert hashlib.sha256(archive.read(manifest["package"]["file"])).hexdigest() == run["package"]["sha256"]
     assert hub.get("/api/runs/"+run["id"]).json() == original
     assert len(hub.get("/api/runs").json()) == 1
+
+
+@pytest.mark.parametrize("kind", ["windows", "macos", "linux"])
+def test_bilingual_instructions_preserve_scenario_and_literal_package_argument(hub, kind):
+    filename = "note's $(probe).zip"
+    run = create_task(hub, kind, filename)
+    response = hub.get(f"/api/strategies/{kind}/kit", params={"run_id": run["id"], "include_package": True})
+    assert response.status_code == 200
+    with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+        manifest = json.loads(archive.read("scenario.json"))
+        commands = []
+        for suffix in ("", ".en"):
+            content = archive.read(f"README{suffix}.md").decode("utf-8")
+            for step in run["spec"]["steps"]:
+                assert step["title"] in content
+            assert run["package"]["sha256"] in archive.read(f"INVITATION{suffix}.txt").decode("utf-8")
+            command = next(line for line in content.splitlines() if " -m prooflane.handoff " in line and line.endswith(" --check"))
+            commands.append(command)
+            if kind == "windows":
+                assert command.endswith("--package 'application/note''s $(probe).zip' --check")
+            else:
+                assert shlex.split(command)[-2:] == [manifest["package"]["file"], "--check"]
+        assert commands[0] == commands[1]
+        assert manifest["spec"]["steps"] == run["spec"]["steps"]
 
 
 def test_handoff_rejects_wrong_platform_missing_task_and_mutated_package(hub):

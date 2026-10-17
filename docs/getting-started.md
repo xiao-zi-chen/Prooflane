@@ -1,5 +1,7 @@
 # 开始使用
 
+**简体中文** · [English](getting-started.en.md)
+
 控制台组织任务，执行器在目标系统运行应用。也可以将任务导出，在测试者的电脑上独立执行。
 
 ## 安装控制台
@@ -63,6 +65,8 @@ Windows 示例编译依赖 .NET Framework 的 C# 编译器。macOS 示例使用 
 在等待平台的结果区域点击“导出执行包”，或进入“执行策略”。选定具体任务后下载 ZIP；需要附带构建时勾选“将应用文件一起放入 ZIP”。
 
 测试者按包内 README 预检并运行，返回 `receipt.json` 和 `evidence.zip`，无需连接你的控制台。分工和复核要求见[执行策略](execution-strategy.md)及[证据验收](handoff-acceptance.md)。
+
+同一执行包内包含中英文说明、验收表和邀请草稿，可按语言选择阅读。
 
 独立结果不会自动导入控制台。需要持续领取任务和自动回传时，再[接入在线节点](multiplatform.md)。
 

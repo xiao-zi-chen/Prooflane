@@ -1,0 +1,23 @@
+name: Feature request (English)
+description: Describe a real use case and the behavior you need
+title: "[Feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Use case and problem
+      description: Who encounters the problem, when does it happen, and how is it handled today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Expected behavior
+      description: Give a specific input and expected outcome, and identify the affected platforms.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and validation
+      description: Describe alternatives, available samples or test devices, and how you would judge whether the change helps.
