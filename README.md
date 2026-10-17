@@ -1,5 +1,7 @@
 # Prooflane · 桌面应用跨平台验收
 
+[![Checks](https://github.com/xiao-zi-chen/new/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/xiao-zi-chen/new/actions/workflows/checks.yml)
+
 桌面应用验收工具。为 Windows、macOS、Linux 分别提供应用构建，用同一组步骤运行测试，再对照截图、录像和日志。
 
 可以把执行包交给有设备的测试者，也可以连接长期在线的执行节点。项目目前处于预览阶段：**Windows 示例已有 GUI 执行记录；macOS、Linux 适配器已实现，尚待目标系统实测。**
@@ -64,7 +66,7 @@ Wayland、Android、iOS 暂不支持。控件操作依赖应用的可访问性�
 .\.venv\Scripts\python.exe scripts/check_docs.py
 ```
 
-提交要求与 GUI 验证命令见[贡献指南](CONTRIBUTING.md)。[自动检查](.github/workflows/checks.yml)区分代码、文档检查和真实桌面验收；新增工作流需推送到 GitHub 后才能取得远端运行结果。
+提交要求与 GUI 验证命令见[贡献指南](CONTRIBUTING.md)。[自动检查](.github/workflows/checks.yml)覆盖三种系统上的代码测试、文档和前端语法；每次提交的结果可在 [GitHub Actions](https://github.com/xiao-zi-chen/new/actions) 查看。真实桌面验收单独记录。
 
 普通问题使用仓库 Issue；报告中附上最短复现步骤和环境。涉及凭据、越权或数据泄露的问题按[安全说明](SECURITY.md)处理。改动记录见 [CHANGELOG](CHANGELOG.md)。
 

@@ -20,7 +20,17 @@
 
 覆盖输入约束、压缩包边界、平台与架构匹配、原子领取、租约失效、认证、取消、回传来源保护、共同场景、执行包白名单、构建哈希和预检不启动应用。
 
-新加入的 GitHub Actions 配置在三种系统和 Python 3.11 / 3.12 下执行这些代码测试。首次远端运行结果需在仓库 Actions 中确认；托管 runner 的代码测试不等于原生 GUI 验收。
+首次 [GitHub Actions 运行](https://github.com/xiao-zi-chen/new/actions/runs/39039156800)对应提交 `ec1256f`：Windows、macOS、Ubuntu 与 Python 3.11 / 3.12 的六个代码测试任务，以及文档 / JavaScript 检查，共七项全部通过。托管 runner 的代码测试不等于原生 GUI 验收。
+
+| Runner | Python 3.11 | Python 3.12 |
+| --- | --- | --- |
+| Windows | 31 通过 | 31 通过 |
+| macOS | 30 通过，1 跳过 | 30 通过，1 跳过 |
+| Ubuntu | 30 通过，1 跳过 | 30 通过，1 跳过 |
+
+非 Windows runner 跳过了依赖 Windows C# 编译器的示例构建用例。该跳过不作为 GUI 验证成功。
+
+另从已提交内容导出干净副本，验证文档检查、控制台启动、健康接口、OpenAPI 和三个平台说明包导出。该检查复用了本机 Python 依赖，不计作全新机器的安装验证。
 
 ## 已有桌面验证
 
