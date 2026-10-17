@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f8">
+  <title>Prooflane · 多平台运行验证</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+  <link rel="stylesheet" href="/strategy.css">
+  <script defer src="/workspace.js"></script>
+  <script defer src="/strategy.js"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="#overview"><span class="brand-icon"><i></i><i></i></span><span>prooflane<span class="brand-dot">.</span></span></a>
+  <div class="workspace">本地工作区</div>
+  <p class="nav-label">测试</p>
+  <nav aria-label="主导航">
+    <a href="#overview" data-nav="overview" class="nav-link" aria-label="测试概览" title="测试概览"><span class="icon" data-icon="grid"></span>测试概览</a>
+    <a href="#strategy" data-nav="strategy" class="nav-link" aria-label="执行策略" title="执行策略"><span class="icon" data-icon="book"></span>执行策略</a>
+    <a href="#new" data-nav="new" class="nav-link active" aria-label="发起测试" title="发起测试"><span class="icon" data-icon="grid"></span>发起测试<span class="nav-plus">＋</span></a>
+    <a href="#history" data-nav="history" class="nav-link" aria-label="运行记录" title="运行记录"><span class="icon" data-icon="history"></span>运行记录<span id="history-count" class="nav-count">0</span></a>
+    <a href="#matrix" data-nav="matrix" class="nav-link" aria-label="平台对照" title="平台对照"><span class="icon" data-icon="grid"></span>平台对照</a>
+    <a href="#nodes" data-nav="nodes" class="nav-link" aria-label="执行节点" title="执行节点"><span class="icon" data-icon="terminal"></span>执行节点</a>
+    <a href="#guide" data-nav="guide" class="nav-link" aria-label="使用说明" title="使用说明"><span class="icon" data-icon="book"></span>使用说明</a>
+  </nav>
+  <div class="sidebar-bottom"><span>Prooflane</span><span class="version">v0.2 · 预览版</span></div>
+</aside>
+<div class="main-shell">
+  <header class="topbar"><div class="breadcrumb">工作台<span>/</span><strong id="page-label">发起测试</strong></div><div class="topbar-right"><span class="local-pill"><i></i>本地部署</span><a href="#guide">使用文档 <span>↗</span></a></div></header>
+  <main id="main-content">
+    <section id="view-overview" class="view" hidden>
+      <div class="page-heading workspace-heading"><div><h1>测试概览</h1><p>查看同一组步骤在各平台的运行结果。</p></div><div class="heading-actions"><a href="#strategy" class="button secondary">导出执行包</a><a href="#new" class="button primary">＋ 发起测试</a></div></div>
+      <div id="platform-readiness" class="platform-readiness"><p>正在读取节点状态…</p></div>
+      <p id="workspace-note" class="workspace-note"></p>
+      <div id="workspace-evidence"><div class="empty-state loading-pulse">正在读取平台证据…</div></div>
+      <div class="workspace-next"><a href="#matrix">全部平台对照 →</a><a href="#nodes">管理节点 →</a></div>
+      <div class="workspace-start"><div><strong>Notes 示例</strong><p id="campaign-demo-hint">创建三个平台的示例任务；没有节点的平台会等待。</p></div><button id="campaign-demo" class="button secondary"><span class="icon" data-icon="play"></span>创建示例任务</button></div>
+    </section>
+    <section id="view-strategy" class="view" hidden>
+      <div class="page-heading strategy-heading"><div><h1>执行策略</h1><p>准备测试文件，交给有对应设备的测试者运行。</p></div></div>
+      <div id="strategy-content"><div class="empty-state loading-pulse">正在读取执行策略…</div></div>
+    </section>
+    <section id="view-new" class="view">
+      <div class="page-heading"><div><h1>发起测试</h1><p>上传应用，填写要检查的步骤。</p></div><button id="demo-button" class="button secondary"><span class="icon" data-icon="play"></span>运行 Windows 示例</button></div>
+      <div class="new-grid">
+        <form id="run-form" class="form-stack">
+          <section class="card platform-picker"><div class="card-header"><h2>选择首个目标平台</h2><span class="muted small">可添加其他平台一起对照</span></div><div class="card-body"><div id="platform-options" class="platform-options"><label class="platform-option"><input type="radio" name="target-platform" value="windows" checked><strong>Windows</strong><small id="availability-windows">检查节点…</small></label><label class="platform-option"><input type="radio" name="target-platform" value="macos"><strong>macOS</strong><small id="availability-macos">检查节点…</small></label><label class="platform-option"><input type="radio" name="target-platform" value="linux"><strong>Linux</strong><small id="availability-linux">检查节点…</small></label></div><div class="fields"><label>目标架构<select id="target-architecture"><option value="any">任意架构（由可用节点执行）</option><option value="x86_64">x86_64 / Intel / AMD</option><option value="arm64">arm64 / Apple Silicon</option></select></label></div><p id="platform-hint" class="field-help">Windows 构建由 Windows 节点运行。</p></div></section>
+          <section class="card"><div class="card-header"><div class="card-title"><span class="section-index">01</span><h2>应用文件</h2></div><span id="package-platform-label" class="muted small">Windows 桌面程序</span></div>
+            <div class="card-body"><label id="upload-zone" class="upload-zone" for="package-file"><input type="file" id="package-file" accept=".exe,.msi,.zip,.dmg,.pkg,.AppImage,.gz"><span class="upload-icon icon" data-icon="upload"></span><strong id="upload-title">拖放安装包到这里，或 <em>选择文件</em></strong><span id="upload-detail">支持 EXE、MSI、ZIP · 最大 300 MB</span><span id="upload-hash" class="upload-hash"></span></label>
+              <div class="fields two-col"><label>测试名称<input id="run-name" placeholder="例如：记事本 v1.2 · 发布前验证" maxlength="100" required></label><label>程序类型<select id="run-mode"><option value="portable">便携程序 · 直接启动</option><option value="installer">安装程序 · 静默安装后启动</option></select></label></div>
+              <div class="fields two-col"><label>主窗口标题 <span class="field-tip">精确匹配</span><input id="window-title" placeholder="例如：My Notes" maxlength="250" required></label><label id="path-label"><span id="path-text">包内 EXE 路径</span><span class="field-tip" id="path-tip">ZIP 多程序时填写</span><input id="app-path" placeholder="例如：MyApp/MyApp.exe" maxlength="500"></label></div>
+              <details class="advanced"><summary>启动与安装参数 <span>⌄</span></summary><div class="fields two-col"><label>静默安装参数 <span class="field-tip">JSON 数组</span><input id="install-args" placeholder='["/S"]' value="[]"></label><label>应用启动参数 <span class="field-tip">JSON 数组</span><input id="app-args" placeholder='["--lang", "zh"]' value="[]"></label></div><p class="field-help">MSI 可使用 ["/qn", "/norestart"]。EXE 参数请按应用安装器文档填写。</p></details>
+            </div></section>
+          <section class="card"><div class="card-header"><div class="card-title"><span class="section-index">02</span><h2>验收步骤</h2></div><span class="muted small"><span id="step-count">3</span> / 5 步</span></div><div class="card-body steps-body"><p class="section-help">填写 3–5 步操作，每步保存一张截图。</p><div id="steps-editor"></div><button type="button" id="add-step" class="add-step"><span>＋</span> 添加验收步骤</button><div class="inline-note"><span class="icon" data-icon="info"></span>文本检查自动判定；布局和体验通过截图人工复核。</div></div></section>
+          <section class="card"><div class="card-header"><h2>其他平台</h2><span class="muted small">共用上面的验收场景</span></div><div class="card-body"><p class="section-help">为每个平台上传对应构建；窗口名、控件定位和预期文本可以单独调整。</p><div id="extra-platforms"></div><button type="button" id="add-platform" class="add-step">＋ 添加另一个平台</button></div></section>
+          <div class="submit-row"><div><span class="icon" data-icon="shield"></span>由对应平台节点执行<span class="muted"> · 每节点串行</span></div><button id="submit-run" type="submit" class="button primary"><span class="icon" data-icon="play"></span>开始测试<span>→</span></button></div>
+        </form>
+        <aside class="context-stack"><section class="card environment-card"><div class="card-header"><h2>本机执行节点</h2><span id="worker-status" class="status-pill neutral">检查中</span></div><div class="environment-visual"><div class="windows-logo"><i></i><i></i><i></i><i></i></div><div><h3 id="environment-name">Windows 执行器</h3><p id="environment-arch">正在获取环境信息</p></div></div><dl class="environment-details"><div><dt>运行方式</dt><dd>真实桌面会话</dd></div><div><dt>并发任务</dt><dd>1 个 <span class="muted">/ 串行执行</span></dd></div><div><dt>录制范围</dt><dd>应用窗口 · 4 fps</dd></div><div><dt>环境状态</dt><dd id="queue-status">等待连接</dd></div></dl><div class="environment-foot"><i></i>请保持测试桌面登录且未锁屏</div></section>
+          <details class="report-help"><summary>报告包含什么</summary><p>步骤截图、应用窗口录像、运行日志和 JSON 报告。运行结束后可下载，也可以复制问题反馈。</p></details>
+          <div class="scope-note"><span class="icon" data-icon="info"></span><p>先验证一个环境中的关键流程。安装与运行会修改测试主机；真实客户包应在对应系统的专用、可还原测试环境执行。未接入的系统会等待节点。</p></div>
+        </aside>
+      </div>
+    </section>
+    <section id="view-matrix" class="view" hidden><div class="page-heading"><div><h1>平台对照</h1><p>比较各平台同一步骤的截图和结果。</p></div><a href="#new" class="button primary">＋ 创建平台对照</a></div><div id="matrix-content"></div></section>
+    <section id="view-nodes" class="view" hidden><div class="page-heading"><div><h1>执行节点</h1><p>查看节点状态和连接方式。</p></div></div><div id="node-list" class="node-grid"></div><div id="node-setup"></div></section>
+    <section id="view-history" class="view" hidden><div class="page-heading"><div><h1>运行记录</h1><p>查看状态、截图和运行报告。</p></div><a class="button primary" href="#new">＋ 发起测试</a></div><div class="history-toolbar"><input id="history-search" placeholder="搜索测试名称或安装包…" aria-label="搜索运行记录"><select id="history-filter" aria-label="筛选状态"><option value="all">全部状态</option><option value="passed">通过</option><option value="failed">失败</option><option value="review">待复核</option><option value="active">运行中</option><option value="cancelled">已取消</option><option value="interrupted">已中断</option></select></div><div id="history-list"></div></section>
+    <section id="view-run" class="view" hidden><div id="run-detail"></div></section>
+    <section id="view-guide" class="view" hidden><div class="page-heading"><div><h1>使用说明</h1><p>可以连接执行节点，也可以导出执行包交给测试者。</p></div></div><div class="guide-grid"><article class="guide-card"><h2>准备应用文件</h2><p>Windows 接收 EXE、MSI、ZIP；macOS 接收包含 APP 的 ZIP、DMG、PKG；Linux 接收 AppImage、ZIP、tar.gz。同一份 Windows EXE 不会被当作 macOS 或 Linux 程序执行。</p><p>移动端 Android / iOS 尚未接入，不展示为已支持。</p></article><article class="guide-card"><h2>选择执行方式</h2><p>测试者可以在“执行策略”中下载执行包，在自己的电脑运行后回传结果。需要持续测试时，再接入对应平台的在线节点。</p><p>macOS 和 Linux 适配器尚待实机验证。在线任务没有可用节点时会等待；独立执行包的结果需人工复核，不会自动写回控制台。</p></article><article class="guide-card"><h2>填写验收步骤</h2><p>配置 3–5 步共同验收场景，为其他平台上传对应包。步骤名称和动作保持一致，窗口标题、控件名称、控件 ID 和预期文本可以分别配置。</p><p>对照页逐行显示各平台结果，能区分待执行、执行失败、检查通过和人工待复核。任务取消或节点失联会保留已知证据。</p></article><article class="guide-card"><h2>查看结果与复测</h2><p>对照页可以复制跨平台反馈，单次运行可下载截图、录像、日志和 JSON 报告。反馈保留平台、架构、安装包哈希、操作步骤及证据索引。</p><p>真实客户的构建仍需在可销毁或可恢复快照的专用环境运行；进程管理、节点凭据和任务目录不等于多租户安全隔离。</p></article></div><div class="guide-callout"><div><h3>运行示例</h3><p>内置 Notes 示例使用本机 Windows 节点。</p></div><button id="guide-demo" class="button primary">运行 Windows 示例</button></div></section>
+  </main>
+  <footer><span>Prooflane</span><span>本地工作区 · v0.2</span></footer>
+</div>
+<div id="toast" role="status" class="toast" hidden></div>
+<dialog id="image-dialog"><button id="close-image" aria-label="关闭截图">×</button><img id="large-image" alt="步骤运行截图"><p id="image-caption"></p></dialog>
+<dialog id="review-dialog"><form id="review-form"><h2 id="review-title">记录人工复核</h2><p>结论和备注会写入 JSON 报告及编码工具反馈。</p><input type="hidden" id="review-index"><input type="hidden" id="review-decision"><label for="review-note">复核备注</label><textarea id="review-note" required maxlength="1000" rows="4" placeholder="描述已确认的表现，或具体发现的问题"></textarea><div class="review-dialog-actions"><button id="review-cancel" type="button" class="button secondary">返回</button><button id="review-submit" class="button primary" type="submit">保存复核结论</button></div></form></dialog>
+</body>
+</html>

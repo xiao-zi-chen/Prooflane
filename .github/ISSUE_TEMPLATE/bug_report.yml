@@ -1,0 +1,39 @@
+name: 问题反馈
+description: 报告可以复现的应用、页面或执行问题
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请只提交脱敏后的最小证据。认证、越权、凭据泄露等问题请先阅读仓库 SECURITY.md，通过私密渠道报告。
+  - type: textarea
+    id: environment
+    attributes:
+      label: 版本和环境
+      description: Prooflane 提交或版本、Python、系统版本、架构、桌面会话；说明使用在线节点还是独立执行包。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 给出最短操作过程、前置条件，以及可公开的样本或配置。
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 预期和实际结果
+      description: 写明失败步骤、原始错误、复现次数；未验证的系统不要推测结果。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 相关证据
+      description: 脱敏日志、截图或录像时间点；不要附带节点凭据、客户安装包或无关个人数据。
+  - type: textarea
+    id: attempts
+    attributes:
+      label: 已尝试的处理
+      description: 人工能否完成相同步骤，调整环境或配置后发生了什么。

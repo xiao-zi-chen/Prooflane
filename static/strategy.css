@@ -1,0 +1,69 @@
+.strategy-platforms {
+ display: flex;
+ gap: 28px;
+ border-bottom: 1px solid var(--border);
+ margin-bottom: 28px;
+}
+.strategy-platforms > a {
+ display: flex;
+ align-items: center;
+ gap: 9px;
+ padding: 10px 2px 14px;
+ margin-bottom: -1px;
+ border-bottom: 2px solid transparent;
+ color: var(--muted);
+ font-size: 14px;
+}
+.strategy-platforms > a:hover { color: var(--primary); }
+.strategy-platforms > a.selected { border-bottom-color: var(--primary); color: var(--primary); font-weight: 600; }
+.strategy-platforms .os-mark { width: 22px; height: 22px; background: transparent; color: inherit; }
+.strategy-platforms .os-mark svg { width: 18px; height: 18px; }
+.strategy-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(270px, 1fr); gap: 48px; align-items: start; }
+.strategy-delivery { min-width: 0; }
+.strategy-delivery h2 { margin-bottom: 24px; font-size: 16px; }
+.strategy-delivery label { display: block; font-size: 13px; font-weight: 500; }
+.strategy-delivery select { margin-top: 8px; max-width: 100%; font-size: 13px; }
+#strategy-binding { font-size: 12px; color: var(--muted); line-height: 1.8; margin-top: 10px; }
+.strategy-task { margin: 22px 0 10px; font-size: 13px; line-height: 1.8; }
+.strategy-task > div { display: flex; gap: 16px; margin: 8px 0; }
+.strategy-task dt { flex: 0 0 64px; color: var(--muted); }
+.strategy-task dd { margin: 0; overflow-wrap: anywhere; }
+.strategy-task dd span { color: var(--muted); }
+.strategy-hash { margin: 12px 0 22px; font-size: 12px; }
+.strategy-hash summary { color: var(--muted); }
+.strategy-hash code { display: block; overflow-wrap: anywhere; margin: 12px 0; padding: 12px; background: #f6f7f8; font: 11px/1.8 Consolas, monospace; }
+.strategy-hash a { color: #355f85; }
+.strategy-delivery .strategy-checkbox { display: flex; align-items: center; gap: 9px; font-weight: 400; margin-top: 20px; line-height: 1.8; }
+.strategy-checkbox[hidden] { display: none; }
+.strategy-checkbox input { width: 16px; height: 16px; min-height: 0; margin: 0; accent-color: var(--primary); flex-shrink: 0; }
+.strategy-delivery .field-help { font-size: 12px; margin: 5px 0 0 25px; }
+.strategy-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.strategy-review { margin-top: 14px; font-size: 12px; line-height: 1.9; color: var(--muted); }
+.strategy-details { margin-top: 28px; border-top: 1px solid var(--border); }
+.strategy-details details { padding: 15px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.strategy-grid summary { cursor: pointer; line-height: 1.8; }
+.strategy-grid summary:hover { color: #355f85; }
+.strategy-details p, .strategy-details ol { font-size: 12px; line-height: 1.9; color: var(--muted); margin: 12px 0 0; }
+.strategy-details ol { padding-left: 20px; }
+.strategy-details li { padding-left: 3px; margin: 8px 0; }
+.strategy-reference { border-left: 1px solid var(--border); padding-left: 32px; }
+.strategy-reference section { margin-bottom: 24px; }
+.strategy-reference h2 { font-size: 13px; margin-bottom: 8px; font-weight: 600; }
+.strategy-reference p { font-size: 12px; line-height: 1.9; color: var(--muted); }
+.strategy-reference p + p { margin-top: 8px; }
+.strategy-reference .strategy-formats { font-size: 11px; }
+.strategy-blockers { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 14px 0; font-size: 12px; }
+.strategy-blockers ul { padding-left: 17px; margin: 12px 0 0; color: var(--muted); line-height: 1.9; }
+.strategy-blockers li { margin: 9px 0; }
+.strategy-node-link { display: inline-block; font-size: 12px; color: #355f85; margin-top: 20px; line-height: 1.9; }
+@media (max-width: 1200px) { .strategy-grid { gap: 28px; } .strategy-reference { padding-left: 24px; } }
+@media (max-width: 850px) {
+ .strategy-grid { grid-template-columns: 1fr; gap: 28px; }
+ .strategy-reference { border-left: 0; padding-left: 0; }
+ .strategy-reference section { margin-bottom: 20px; }
+}
+@media (max-width: 560px) {
+ .strategy-platforms { justify-content: space-between; gap: 12px; margin-bottom: 24px; }
+ .strategy-platforms > a { font-size: 13px; gap: 6px; }
+ .strategy-actions .button { flex: 1; padding-inline: 12px; }
+}

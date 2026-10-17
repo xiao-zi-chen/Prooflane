@@ -1,0 +1,27 @@
+.venv/
+data/
+__pycache__/
+.pytest_cache/
+*.pyc
+artifacts/
+
+
+agent-data/
+*.token
+
+# Local credentials, execution outputs and editor files
+.env
+.env.*
+!.env.example
+node.token
+agent-token
+results/
+*.pem
+*.key
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.ruff_cache/
+.coverage
+htmlcov/

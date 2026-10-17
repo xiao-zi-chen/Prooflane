@@ -1,0 +1,3 @@
+﻿-r requirements.txt
+python-xlib>=0.33; sys_platform == 'linux'
+# AT-SPI and PyGObject are supplied by the Linux distribution; see docs/multiplatform.md.

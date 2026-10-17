@@ -1,0 +1,37 @@
+{
+  "name": "Notes · 发布前验收",
+  "package_id": "00000000000000000000000000000000",
+  "mode": "portable",
+  "app_path": "",
+  "install_args": [],
+  "app_args": [],
+  "window_title": "Prooflane Notes",
+  "steps": [
+    {
+      "title": "等待主窗口",
+      "action": "wait_window"
+    },
+    {
+      "title": "输入笔记",
+      "action": "type_text",
+      "automation_id": "noteInput",
+      "value": "Hello from Prooflane"
+    },
+    {
+      "title": "保存笔记",
+      "action": "click",
+      "automation_id": "saveButton"
+    },
+    {
+      "title": "确认保存提示",
+      "action": "assert_text",
+      "value": "Saved: Hello from Prooflane"
+    },
+    {
+      "title": "人工检查布局",
+      "action": "screenshot"
+    }
+  ],
+  "platform": "windows",
+  "architecture": "any"
+}
